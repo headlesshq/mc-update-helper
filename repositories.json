@@ -1,0 +1,20 @@
+{
+	"defaults": {
+		"assignees": ["okafke"],
+		"neo": "0-beta"
+	},
+	"repositories": [
+		{
+			"repo": "headlesshq/hmc-specifics",
+			"readme_group": "minor"
+		},
+		{
+			"repo": "headlesshq/mc-runtime-test",
+			"readme_group": "major"
+		},
+		{
+			"repo": "headlesshq/hmc-optimizations",
+			"enabled": false
+		}
+	]
+}

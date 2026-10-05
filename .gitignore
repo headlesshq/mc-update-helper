@@ -1,0 +1,55 @@
+# gradle
+
+.gradle/
+build/
+out/
+classes/
+
+# eclipse
+
+*.launch
+
+# idea
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# vscode
+
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# macos
+
+*.DS_Store
+
+# fabric
+
+run/
+
+# python
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+/work/
+
+# java
+
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+/libs/
+/logs/
+/.architectury-transformer/
+
+/HeadlessMC
+headlessmc-launcher-*.jar
+.env

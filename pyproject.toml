@@ -1,0 +1,9 @@
+[project]
+name = "mc-update-helper"
+version = "1.0.0"
+description = "Opens pull requests for new Minecraft versions in the HeadlessMC repositories"
+requires-python = ">=3.10"
+dependencies = ["requests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,60 @@
+name: Check for new mc version
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Only show the changes, do not push or open pull requests"
+        type: boolean
+        default: false
+      version:
+        description: "Minecraft version to use instead of the latest release"
+        type: string
+        required: false
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest
+
+  check-for-new-mc-version:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check for new mc version
+        env:
+          # PAT (or GitHub App token) with Contents and Pull requests write access to all repositories
+          # in repositories.json. The GITHUB_TOKEN of this repository cannot push to other repositories.
+          GH_TOKEN: ${{ secrets.PR_TOKEN }}
+          DRY_RUN: ${{ (github.event_name == 'push' || github.event_name == 'pull_request' || inputs.dry-run) && '--dry-run' || '' }}
+          VERSION: ${{ inputs.version }}
+        run: python -m mc_update_helper $DRY_RUN ${VERSION:+--version "$VERSION"}
