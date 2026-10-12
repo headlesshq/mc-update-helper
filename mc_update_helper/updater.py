@@ -1,6 +1,6 @@
 """Applies a new Minecraft version to a checked out repository.
 
-A repository is expected to have the layout of hmc-specifics / mc-runtime-test:
+A repository is expected to have the layout of hmc-specifics / mc-runtime-test-mod:
 a ci-data.json in its root and one Gradle project per Minecraft version (e.g. 26_2, 1_21_10).
 """
 import json
