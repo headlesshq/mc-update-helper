@@ -5,12 +5,10 @@
 	},
 	"repositories": [
 		{
-			"repo": "headlesshq/hmc-specifics",
-			"readme_group": "minor"
+			"repo": "headlesshq/hmc-specifics"
 		},
 		{
-			"repo": "headlesshq/mc-runtime-test-mod",
-			"readme_group": "major"
+			"repo": "headlesshq/mc-runtime-test-mod"
 		},
 		{
 			"repo": "headlesshq/hmc-optimizations",

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from mc_update_helper.updater import (RepoOptions, modify_fabric_mod_json, modify_mods_toml, modify_readme,
+from mc_update_helper.updater import (modify_fabric_mod_json, modify_mods_toml, modify_readme,
                                       update_repository)
 from mc_update_helper.versions import McVersion
 
@@ -38,17 +38,10 @@ versionRange = "{range}"
 ordering = "NONE"
 """
 
-SPECIFICS_README = """The HMC-Specifics currently support the following Minecraft versions and modloaders:
-| Version | Forge | Fabric | NeoForge |
-| :-: | :-: | :-: | :-: |
-| 26.2 | :white_check_mark:  | :white_check_mark:  | :white_check_mark: |
-| 26.1 - 26.1.2 | :white_check_mark:  | :white_check_mark:  | :white_check_mark: |
-"""
-
-RUNTIME_TEST_README = """| Version         | Forge           | Fabric          | NeoForge        |
-|-----------------|----------------|----------------|----------------|
-| 26.1 - 26.3     | ✔️              | ✔️              | ✔️              |
-| 1.21 - 1.21.11  | ✔️              | ✔️              | ✔️              |
+README = """| Version         | Forge | Fabric | NeoForge |
+|-----------------|-------|--------|----------|
+| 26.1 - 26.3     | ✅    | ✅     | ✅       |
+| 1.21 - 1.21.11  | ✅    | ✅     | ✅       |
 
         with:
           mc: 26.1.1
@@ -116,28 +109,19 @@ def test_mods_toml_only_changes_minecraft_dependency():
     assert 'versionRange = "[26.4,26.5)"' in closed_range
 
 
-def test_readme_group_by_minor():
-    new_minor = modify_readme(SPECIFICS_README, '26.2', '26.3', 'minor')
-    assert '| 26.3 | :white_check_mark:  | :white_check_mark:  | :white_check_mark: |\n' \
-           '| 26.2 | :white_check_mark:' in new_minor
-    new_patch = modify_readme(SPECIFICS_README, '26.2', '26.2.1', 'minor')
-    assert '| 26.2 - 26.2.1 | :white_check_mark:' in new_patch
-    extend_range = modify_readme(SPECIFICS_README.replace('| 26.2 |', '| 26.2 - 26.2.1 |'),
-                                 '26.2.1', '26.2.2', 'minor')
-    assert '| 26.2 - 26.2.2 | :white_check_mark:' in extend_range
-
-
-def test_readme_group_by_major():
-    same_major = modify_readme(RUNTIME_TEST_README, '26.3', '26.4', 'major')
-    assert '| 26.1 - 26.4     | ✔️' in same_major
+def test_modify_readme():
+    same_major = modify_readme(README, '26.3', '26.4')
+    assert '| 26.1 - 26.4     | ✅' in same_major
     assert 'mc: 26.4\n' in same_major
-    new_major = modify_readme(RUNTIME_TEST_README, '26.3', '27.1', 'major')
-    assert '| 27.1            | ✔️              | ✔️              | ✔️              |\n' \
+    patch = modify_readme(README, '26.3', '26.3.1')
+    assert '| 26.1 - 26.3.1   | ✅' in patch
+    new_major = modify_readme(README, '26.3', '27.1')
+    assert '| 27.1            | ✅    | ✅     | ✅       |\n' \
            '| 26.1 - 26.3     |' in new_major
 
 
 def test_new_minor_version(tmp_path):
-    root = create_repo(tmp_path, '26.2', '26_2', '~26.2.0', '[26.2.0,)', SPECIFICS_README, current_version_json=True)
+    root = create_repo(tmp_path, '26.2', '26_2', '~26.2.0', '[26.2.0,)', README.replace('26.3', '26.2'), current_version_json=True)
     result = update_repository(root, '26.3', '66.0.0')
 
     assert result.new_dir and result.dir == '26_3' and result.previous_version == '26.2'
@@ -159,12 +143,12 @@ def test_new_minor_version(tmp_path):
 
     current_version = json.loads((root / 'current-version.json').read_text())
     assert (current_version['major'], current_version['minor'], current_version['dir']) == (26, 3, '26_3')
-    assert '| 26.3 |' in (root / 'README.md').read_text()
+    assert '| 26.1 - 26.3     |' in (root / 'README.md').read_text()
 
 
 def test_new_patch_version(tmp_path):
-    root = create_repo(tmp_path, '26.3', '26_3', '~26.3', '[26.3,26.4)', RUNTIME_TEST_README)
-    result = update_repository(root, '26.3.1', '66.1.0', RepoOptions(readme_group='major'))
+    root = create_repo(tmp_path, '26.3', '26_3', '~26.3', '[26.3,26.4)', README)
+    result = update_repository(root, '26.3.1', '66.1.0', )
 
     assert not result.new_dir and result.dir == '26_3'
     assert not (root / '26_3_1').exists()
@@ -176,7 +160,7 @@ def test_new_patch_version(tmp_path):
 
 @pytest.mark.parametrize('latest', ['26.3', '26.2', '1.21.11'])
 def test_already_up_to_date(tmp_path, latest):
-    root = create_repo(tmp_path, '26.3', '26_3', '~26.3', '[26.3,26.4)', RUNTIME_TEST_README)
+    root = create_repo(tmp_path, '26.3', '26_3', '~26.3', '[26.3,26.4)', README)
     ci_data = (root / 'ci-data.json').read_text()
     assert update_repository(root, latest, '66.0.0') is None
     assert (root / 'ci-data.json').read_text() == ci_data
