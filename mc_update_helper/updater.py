@@ -24,10 +24,6 @@ IGNORED_DIRS = ('build', 'out', 'run', 'bin', '.gradle', '.idea')
 
 @dataclass
 class RepoOptions:
-    # How the version table in the README groups versions into rows:
-    # "minor": one row per minor version (1.21 - 1.21.11 | 26.1 - 26.1.2 | 26.2)
-    # "major": one row per major version (26.1 - 26.3)
-    readme_group: str = 'minor'
     readme: str = 'README.md'
     neo: str = DEFAULT_NEO_VERSION
 
@@ -175,12 +171,9 @@ def _replace_first_cell(line: str, text: str) -> str:
     return prefix + new_cell + rest
 
 
-def modify_readme(content: str, current: str, latest: str, group: str) -> str:
-    current_version, latest_version = McVersion.parse(current), McVersion.parse(latest)
-    if group == 'major':
-        same_row = current_version.major == latest_version.major
-    else:
-        same_row = current_version.same_minor(latest_version)
+def modify_readme(content: str, current: str, latest: str) -> str:
+    # the version table has one row per major version, e.g. 26.1 - 26.3
+    same_row = McVersion.parse(current).major == McVersion.parse(latest).major
 
     lines = content.splitlines(keepends=True)
     for i, line in enumerate(lines):
@@ -240,6 +233,6 @@ def update_repository(root: Path, latest: str, lex: str, options: RepoOptions = 
 
     readme = root / options.readme
     if readme.exists():
-        modify_file(readme, lambda c: modify_readme(c, template['mc'], latest, options.readme_group))
+        modify_file(readme, lambda c: modify_readme(c, template['mc'], latest))
 
     return UpdateResult(previous_version=template['mc'], version=latest, dir=curr_dir, new_dir=new_dir)

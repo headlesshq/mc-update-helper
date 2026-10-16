@@ -49,7 +49,6 @@ def process_repository(github: GitHub, config: dict, defaults: dict, latest: str
     git('clone', '--quiet', '--depth', '1', '--branch', base, github.clone_url(repo), str(checkout))
 
     options = RepoOptions(
-        readme_group=config.get('readme_group', 'minor'),
         readme=config.get('readme', 'README.md'),
         neo=config.get('neo', defaults.get('neo', RepoOptions.neo)),
     )
