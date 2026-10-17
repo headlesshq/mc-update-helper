@@ -8,4 +8,7 @@ Currently, we are updating
 - [hmc-specifics](https://github.com/headlesshq/hmc-specifics)
 - [hmc-optimizations](https://github.com/headlesshq/hmc-optimizations)
 
+Each repository has a `ci-data.json` in its root and one Gradle project per Minecraft version in `versions`,
+e.g. `versions/26_3`. For a new minor version the project of the previous version is copied, e.g. to `versions/26_4`.
+
 Example Pull-Request: https://github.com/headlesshq/hmc-specifics/pull/65
