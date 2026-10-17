@@ -1,14 +1,15 @@
 """Applies a new Minecraft version to a checked out repository.
 
-A repository is expected to have the layout of hmc-specifics / mc-runtime-test-mod:
-a ci-data.json in its root and one Gradle project per Minecraft version (e.g. 26_2, 1_21_10).
+A repository is expected to have the layout of hmc-specifics / mc-runtime-test-mod / hmc-optimizations:
+a ci-data.json in its root and one Gradle project per Minecraft version in the versions directory
+(e.g. versions/26_2, versions/1_21_10).
 """
 import json
 import os
 import re
 import shutil
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Callable, Optional
 
 from .versions import McVersion
@@ -84,7 +85,8 @@ def modify_mods_toml(content: str, version: McVersion) -> str:
 
 
 def prepare_new_dir(root: Path, curr_dir: str, version: McVersion, latest: str, lex: str, neo: Optional[str]) -> str:
-    new_dir = version.dir_name
+    # next to the project of the current version, e.g. versions/26_2 -> versions/26_3
+    new_dir = str(PurePosixPath(curr_dir).parent / version.dir_name)
     if not (root / new_dir).exists():
         shutil.copytree(root / curr_dir, root / new_dir, ignore=shutil.ignore_patterns(*IGNORED_DIRS))
 

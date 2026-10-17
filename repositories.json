@@ -12,7 +12,7 @@
 		},
 		{
 			"repo": "headlesshq/hmc-optimizations",
-			"enabled": false
+			"readme": "README.MD"
 		}
 	]
 }
