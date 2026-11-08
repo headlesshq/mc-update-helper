@@ -1,6 +1,10 @@
 {
   "name": "mc-update-helper",
   "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb"
+  },
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
