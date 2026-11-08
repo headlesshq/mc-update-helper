@@ -1,0 +1,28 @@
+{
+  "name": "mc-update-helper",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "mounts": [
+    "source=mc-update-helper-pip-cache,target=/home/vscode/.cache/pip,type=volume"
+  ],
+  "onCreateCommand": "sudo chown vscode:vscode /home/vscode/.cache/pip",
+  "postCreateCommand": "pip install -r requirements.txt -r requirements-dev.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": ["tests"]
+      }
+    }
+  }
+}
